@@ -23,7 +23,7 @@
 	            [
 	                {
 	                    "type" : "label",
-	                    "for" : "txt-username",
+	                    "for" : "username",
 	                    "class" : "lead",
 	                    "html" : "What is your first name?",
 	                },
@@ -32,15 +32,37 @@
 	                },
 	                {
 	                    "name" : "username",
-	                    "id" : "txt-username",
+	                    "id" : "username",
 	                    "type" : "text",
-	                    "placeholder" : "E.g. user@example.com",
+	                    "placeholder" : "E.g. Shakira",
 	                    "class" : "form-control",
 	                    "autofocus" : "true",
 	                    "required" : "true",
 	                },
 	                {
 	                    "type" : "br",
+	                },
+	                {
+	                    "type" : "div",
+	                    "class" : "checkbox",
+	                    "html" :
+	                    [
+	                    	{
+	                    		"type" : "label",
+	                    		"html" : [
+			                    	{
+			                    		"type" : "span",
+			                    		"html" : "Remember this",
+			                    	},
+			                    	{
+			                    		"type" : "checkbox",
+			                    	},
+	                    		],
+	                    	},
+	                    ],
+	                },
+	                {
+	                    "type" : "hr",
 	                },
 	                {
 	                    "type" : "submit",
