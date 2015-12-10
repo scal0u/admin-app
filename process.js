@@ -3,12 +3,18 @@ var prompt = require('prompt');
 prompt.start();
 
 
+////////////////////////
+// SETTING UP CLASSES //
+////////////////////////
+
 function Process(n, t, r) {
 	this.name = n;
 	this.type = t;
 	this.requirements = r;
 
 	this.launch = function() {
+
+		// Fetching missing requirements
 		for (x in this.requirements) {
 			if(!this.requirements[x]) console.log("Please enter your "+x+" below:");
 
@@ -18,11 +24,10 @@ function Process(n, t, r) {
 				thisUser.date_of_birth = result.x;
 				console.log(thisUser.date_of_birth);
 			});
-
 		};
 	};
-
 }
+
 
 function User(ln, fn, dob) {
 	this.last_name = ln;
@@ -35,6 +40,10 @@ function User(ln, fn, dob) {
 	};
 }
 
+
+///////////////
+// VARIABLES //
+///////////////
 
 var thisUser = new User('Conges', 'Pascal');
 var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", {"first name":thisUser.first_name, "date of birth":thisUser.mobile});
