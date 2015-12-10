@@ -1,0 +1,60 @@
+<html>
+<head>
+	<title>Admin - Test forms</title>
+
+	<meta name="viewport" content="width=device-width, user-scalable=yes">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+	<script src="js/dForm.js"></script>
+	
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+</head>
+<body>
+	
+	<script type="text/javascript">
+	    $(function() {
+	      // Generate a form
+	        $("#myform").dform({
+	            "action" : "/",
+	            "method" : "get",
+	            "html" :
+	            [
+	                {
+	                    "type" : "label",
+	                    "for" : "txt-username",
+	                    "class" : "lead",
+	                    "html" : "What is your first name?",
+	                },
+	                {
+	                    "type" : "br",
+	                },
+	                {
+	                    "name" : "username",
+	                    "id" : "txt-username",
+	                    "type" : "text",
+	                    "placeholder" : "E.g. user@example.com",
+	                    "class" : "form-control",
+	                    "autofocus" : "true",
+	                    "required" : "true",
+	                },
+	                {
+	                    "type" : "br",
+	                },
+	                {
+	                    "type" : "submit",
+	                    "value" : "Continue",
+	                    "class" : "btn btn-primary",
+	                }
+	            ]
+	        });
+	    });
+	</script>
+
+	<div class="container">
+		<form id="myform" class="well row text-center"></form>
+	</div>
+
+</body>
+</html>
