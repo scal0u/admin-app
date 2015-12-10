@@ -1,3 +1,8 @@
+// Prompt NodeJS library requirements
+var prompt = require('prompt');
+prompt.start();
+
+
 function Process(n, t, r) {
 	this.name = n;
 	this.type = t;
@@ -6,6 +11,14 @@ function Process(n, t, r) {
 	this.launch = function() {
 		for (x in this.requirements) {
 			if(!this.requirements[x]) console.log("Please enter your "+x+" below:");
+
+			// NodeJS prompt
+			prompt.get(['x'], function (err, result) {
+				if (err) { return onErr(err); }
+				thisUser.date_of_birth = result.x;
+				console.log(thisUser.date_of_birth);
+			});
+
 		};
 	};
 
