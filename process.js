@@ -16,14 +16,15 @@ function Process(n, t, r) {
 
 		// Fetching missing requirements
 		for (x in this.requirements) {
-			if(!this.requirements[x]) console.log("Please enter your "+x+" below:");
+			if(!this.requirements[x]) {
+				// NodeJS prompt
+				prompt.get([x], function (err, result) {
+					if (err) { return onErr(err); }
+					thisUser.date_of_birth = result.x;
+					console.log("\n\nThank you.");
+				});
+			}
 
-			// NodeJS prompt
-			prompt.get(['x'], function (err, result) {
-				if (err) { return onErr(err); }
-				thisUser.date_of_birth = result.x;
-				console.log(thisUser.date_of_birth);
-			});
 		};
 	};
 }
@@ -46,6 +47,7 @@ function User(ln, fn, dob) {
 ///////////////
 
 var thisUser = new User('Conges', 'Pascal');
-var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", {"first name":thisUser.first_name, "date of birth":thisUser.mobile});
+var requirements = {"first name":thisUser.first_name, "date of birth":thisUser.date_of_birth};
+var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", requirements);
 
 inscriptionMaif.launch();
