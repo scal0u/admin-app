@@ -15,12 +15,12 @@ function Process(n, t, r) {
 	this.launch = function() {
 
 		// Fetching missing requirements
-		for (x in this.requirements) {
-			if(!this.requirements[x]) {
+		for (req in this.requirements) {
+			if(!this.requirements[req]) {
 				// NodeJS prompt
-				prompt.get([x], function (err, result) {
+				prompt.get([req], function (err, result) {
 					if (err) { return onErr(err); }
-					thisUser.date_of_birth = result.x;
+					thisUser.date_of_birth = result.req;
 					console.log("\n\nThank you.");
 				});
 			}
