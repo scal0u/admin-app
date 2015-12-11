@@ -1,6 +1,4 @@
-// Prompt NodeJS library requirements
-var prompt = require('prompt');
-prompt.start();
+output = "";
 
 
 ////////////////////////
@@ -12,23 +10,26 @@ function Process(n, t, r) {
 	this.type = t;
 	this.requirements = r;
 
+	this.prompt = function(req) {
+		output += "Information needed: "+req+"\n";
+	};
+
 	this.launch = function() {
 
 		// Fetching missing requirements
 		for (req in this.requirements) {
 			if(!this.requirements[req]) {
+				this.prompt(req);
 				// NodeJS prompt
-				prompt.get([req], function (err, result) {
-					if (err) { return onErr(err); }
-					thisUser.date_of_birth = result.req;
-					console.log("\n\nThank you.");
-				});
+				// prompt.get(req, function (err, result) {
+				// 	if (err) { return onErr(err); }
+				// 	else console.log(result[req]);
+				// });
 			}
 
 		};
 	};
 }
-
 
 function User(ln, fn, dob) {
 	this.last_name = ln;
@@ -46,8 +47,21 @@ function User(ln, fn, dob) {
 // VARIABLES //
 ///////////////
 
-var thisUser = new User('Conges', 'Pascal');
+var thisUser = new User('Conges');
 var requirements = {"first name":thisUser.first_name, "date of birth":thisUser.date_of_birth};
 var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", requirements);
 
 inscriptionMaif.launch();
+
+
+
+/////////////////
+// SERVER SIDE //
+/////////////////
+var http = require('http');
+
+var server = http.createServer(function(req, res) {
+  res.writeHead(200);
+  res.end(output);
+});
+server.listen(8080);
