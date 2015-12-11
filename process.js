@@ -20,11 +20,7 @@ function Process(n, t, r) {
 		for (req in this.requirements) {
 			if(!this.requirements[req]) {
 				this.prompt(req);
-				// NodeJS prompt
-				// prompt.get(req, function (err, result) {
-				// 	if (err) { return onErr(err); }
-				// 	else console.log(result[req]);
-				// });
+				break;
 			}
 
 		};
