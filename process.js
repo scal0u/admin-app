@@ -11,15 +11,16 @@ function Process(n, t, r) {
 	this.requirements = r;
 
 	this.prompt = function(req) {
-		output += "Information needed: "+req+"\n";
+		output += JSON.stringify(req);
+		console.log(output);
 	};
 
 	this.launch = function() {
 
 		// Fetching missing requirements
 		for (req in this.requirements) {
-			if(!this.requirements[req]) {
-				this.prompt(req);
+			if(!this.requirements[req].look_for) {
+				this.prompt(this.requirements[req]);
 				break;
 			}
 
@@ -44,7 +45,10 @@ function User(ln, fn, dob) {
 ///////////////
 
 var thisUser = new User('Conges');
-var requirements = {"first name":thisUser.first_name, "date of birth":thisUser.date_of_birth};
+var requirements =
+[
+	{look_for: thisUser.first_name, name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. Robert"},
+];
 var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", requirements);
 
 inscriptionMaif.launch();

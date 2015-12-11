@@ -16,49 +16,50 @@
 	<script type="text/javascript">
 	    $(function() {
 
-	    	var req = {
-	    		name: "first_name",
-	    		question: "What is your first name?",
-	    		type: "text",
-	    	};
+		    $.post("http://localhost:8080", function(data, status){
 
-			var reqArray = {
-	            "action" : "",
-	            "method" : "get",
-	            "html" :
-	            [
-	                {
-	                    "type" : "label",
-	                    "for" : "username",
-	                    "class" : "lead",
-	                    "html" : req.question,
-	                },
-	                {
-	                    "type" : "br",
-	                },
-	                {
-	                    "name" : req.name,
-	                    "id" : req.name,
-	                    "type" : req.type,
-	                    "placeholder" : "E.g. Shakira",
-	                    "class" : "form-control",
-	                    "autofocus" : "true",
-	                    "required" : "true",
-	                },
-	                {
-	                    "type" : "hr",
-	                },
-	                {
-	                    "type" : "submit",
-	                    "value" : "Continue",
-	                    "class" : "btn btn-primary",
-	                }
-	            ]
-	        };
+		    	var req = JSON.parse(data);
+		        
+				var reqArray = {
+		            "action" : "",
+		            "method" : "get",
+		            "html" :
+		            [
+		                {
+		                    "type" : "label",
+		                    "for" : "username",
+		                    "class" : "lead",
+		                    "html" : req.question,
+		                },
+		                {
+		                    "type" : "br",
+		                },
+		                {
+		                    "name" : req.name,
+		                    "id" : req.name,
+		                    "type" : req.type,
+		                    "placeholder" : req.placeholder,
+		                    "class" : "form-control",
+		                    "autofocus" : "true",
+		                    "required" : "true",
+		                },
+		                {
+		                    "type" : "hr",
+		                },
+		                {
+		                    "type" : "submit",
+		                    "value" : "Continue",
+		                    "class" : "btn btn-primary",
+		                }
+		            ]
+		        };
 
-	      // Generate a form
-	        $("#myform").dform(reqArray);
-	    });
+		      // Generate a form
+		        $("#myform").dform(reqArray);
+		    });
+		    });
+
+
 	</script>
 
 	<div class="container">
