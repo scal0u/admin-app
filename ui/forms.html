@@ -16,6 +16,12 @@
 	<script type="text/javascript">
 	    $(function() {
 
+	    	var req = {
+	    		name: "first_name",
+	    		question: "What is your first name?",
+	    		type: "text",
+	    	};
+
 			var reqArray = {
 	            "action" : "",
 	            "method" : "get",
@@ -25,15 +31,15 @@
 	                    "type" : "label",
 	                    "for" : "username",
 	                    "class" : "lead",
-	                    "html" : "What is your first name?",
+	                    "html" : req.question,
 	                },
 	                {
 	                    "type" : "br",
 	                },
 	                {
-	                    "name" : "username",
-	                    "id" : "username",
-	                    "type" : "text",
+	                    "name" : req.name,
+	                    "id" : req.name,
+	                    "type" : req.type,
 	                    "placeholder" : "E.g. Shakira",
 	                    "class" : "form-control",
 	                    "autofocus" : "true",
