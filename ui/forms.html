@@ -59,14 +59,15 @@
 
 		      // Generate a form
 		        $("#myform").empty().dform(reqArray);
+		        $('input:first-of-type').focus();
 
 		    });
-
 
 			$( "#myform" ).on( "submit", function(event) {
 				event.preventDefault();
 				socket.emit('message', $(this).serializeArray());
 			});
+
 	    });
 
 	</script>
