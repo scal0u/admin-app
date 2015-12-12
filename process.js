@@ -47,7 +47,7 @@ function User(ln, fn, dob) {
 var thisUser = new User('Conges');
 var requirements =
 [
-	{look_for: thisUser.first_name, name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. Shakira"},
+	{look_for: thisUser.first_name, name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"},
 	{look_for: thisUser.date_of_birth, name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"},
 ];
 var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", requirements);
@@ -72,6 +72,7 @@ var io = require('socket.io').listen(server);
 // Quand on client se connecte, on le note dans la console
 io.sockets.on('connection', function (socket) {
     console.log('Un client est connecté !');
+    socket.emit('message', output);
 });
 
 server.listen(8080);

@@ -18,10 +18,10 @@
 	<script type="text/javascript">
 	    $(function() {
             var socket = io.connect('http://localhost:8080');
+		    socket.on('message', function(message) {
 
-		    $.post("http://localhost:8080", function(data, status){
-
-		    	var req = JSON.parse(data);
+		        console.log(message);
+		    	var req = JSON.parse(message);
 		        
 				var reqArray = {
 		            "action" : "",
@@ -58,8 +58,9 @@
 		        };
 
 		      // Generate a form
-		        $("#myform").dform(reqArray);
+		        $("#myform").empty().dform(reqArray);
 		    });
+
 	    });
 
 	</script>
