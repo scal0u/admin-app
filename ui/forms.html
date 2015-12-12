@@ -20,7 +20,7 @@
             var socket = io.connect('http://localhost:8080');
 		    socket.on('message', function(message) {
 
-		        console.log(message);
+		        // console.log(message);
 		    	var req = JSON.parse(message);
 		        
 				var reqArray = {
@@ -59,8 +59,14 @@
 
 		      // Generate a form
 		        $("#myform").empty().dform(reqArray);
+
 		    });
 
+
+			$( "#myform" ).on( "submit", function(event) {
+				event.preventDefault();
+				socket.emit('message', $(this).serializeArray());
+			});
 	    });
 
 	</script>

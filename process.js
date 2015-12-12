@@ -73,6 +73,11 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
     console.log('Un client est connecté !');
     socket.emit('message', output);
+	
+	socket.on('message', function (message) {
+	    console.log(message);
+	});	
 });
+
 
 server.listen(8080);
