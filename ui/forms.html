@@ -20,46 +20,52 @@
             var socket = io.connect('http://localhost:8080');
 		    socket.on('message', function(message) {
 
-		        // console.log(message);
-		    	var req = JSON.parse(message);
-		        
-				var reqArray = {
-		            "action" : "",
-		            "method" : "get",
-		            "html" :
-		            [
-		                {
-		                    "type" : "label",
-		                    "for" : "username",
-		                    "class" : "lead",
-		                    "html" : req.question,
-		                },
-		                {
-		                    "type" : "br",
-		                },
-		                {
-		                    "name" : req.name,
-		                    "id" : req.name,
-		                    "type" : req.type,
-		                    "placeholder" : req.placeholder,
-		                    "class" : "form-control",
-		                    "autofocus" : "true",
-		                    "required" : "true",
-		                },
-		                {
-		                    "type" : "hr",
-		                },
-		                {
-		                    "type" : "submit",
-		                    "value" : "Continue",
-		                    "class" : "btn btn-primary",
-		                }
-		            ]
-		        };
+		        console.log(message);
+		        if(message.dialog) $("#myform").html(message.dialog);
 
-		      // Generate a form
-		        $("#myform").empty().dform(reqArray);
-		        $('input:first-of-type').focus();
+		        else {
+
+			    	var req = JSON.parse(message);
+			        
+					var reqArray = {
+			            "action" : "",
+			            "method" : "get",
+			            "html" :
+			            [
+			                {
+			                    "type" : "label",
+			                    "for" : "username",
+			                    "class" : "lead",
+			                    "html" : req.question,
+			                },
+			                {
+			                    "type" : "br",
+			                },
+			                {
+			                    "name" : req.name,
+			                    "id" : req.name,
+			                    "type" : req.type,
+			                    "placeholder" : req.placeholder,
+			                    "class" : "form-control",
+			                    "autofocus" : "true",
+			                    "required" : "true",
+			                },
+			                {
+			                    "type" : "hr",
+			                },
+			                {
+			                    "type" : "submit",
+			                    "value" : "Continue",
+			                    "class" : "btn btn-primary",
+			                }
+			            ]
+			        };
+
+			      // Generate a form
+			        $("#myform").empty().dform(reqArray);
+			        $('input:first-of-type').focus();
+
+		        }
 
 		    });
 
