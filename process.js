@@ -3,15 +3,15 @@
 /////////////////////////
 
 // Generates a form
-function prompt(req) {
+function prompt(q) {
 	if(!output) output = output_default;
-	output = JSON.stringify(req);
+	output = JSON.stringify(q);
 };
 
 function Process(n, t, r) {
 	this.name = n;
 	this.type = t;
-	this.reqs = {};
+	this.steps = {};
 	this.promise = function() {};
 	processes.push(this);
 
@@ -20,14 +20,14 @@ function Process(n, t, r) {
 		this.active = true;
 		console.log(this.name+' is now active');			
 
-		// Fetching missing reqs
-		for (req in this.reqs) {
+		// Fetching missing steps
+		for (step in this.steps) {
 			output = output_default;
 
 			// If condition is not fulfilled 
-			if(!this.reqs[req].condition()) {
+			if(!this.steps[step].condition()) {
 				// Let's fulfill it
-				this.reqs[req].method();
+				this.steps[step].method();
 				break;
 			}
 		};
@@ -62,13 +62,13 @@ var thisUser = new User('Congès');
 var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription");
 var vaccination = new Process("Vaccination", "administrative");
 
-vaccination.reqs.height = {condition: function() { return thisUser.height }, method: function() { prompt({name: "height", type: "text", question: "Please enter your height", placeholder: "30cm"})}, promise: function(nv) { thisUser.height = nv; inscriptionMaif.launch(); } };
+vaccination.steps.height = {condition: function() { return thisUser.height }, method: function() { prompt({name: "height", type: "text", question: "Please enter your height", placeholder: "30cm"})}, promise: function(nv) { thisUser.height = nv; inscriptionMaif.launch(); } };
 vaccination.promise = function() { thisUser.vaccinated = true; inscriptionMaif.launch() };
 
-inscriptionMaif.reqs.first_name = {condition: function() { return thisUser.first_name }, method: function() { prompt({name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"})}, promise: function(nv) {thisUser.first_name = nv} };
+inscriptionMaif.steps.first_name = {condition: function() { return thisUser.first_name }, method: function() { prompt({name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"})}, promise: function(nv) {thisUser.first_name = nv} };
 // Calling another process
-inscriptionMaif.reqs.vaccinated = {condition: function() { return thisUser.vaccinated }, method: function() {  inscriptionMaif.active = false; vaccination.launch(); } };
-inscriptionMaif.reqs.date_of_birth = {condition: function() { return thisUser.date_of_birth }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} };
+inscriptionMaif.steps.vaccinated = {condition: function() { return thisUser.vaccinated }, method: function() {  inscriptionMaif.active = false; vaccination.launch(); } };
+inscriptionMaif.steps.date_of_birth = {condition: function() { return thisUser.date_of_birth }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} };
 
 
 
@@ -100,7 +100,7 @@ io.sockets.on('connection', function (socket) {
 		for (p in processes) {
 			
 			if(processes[p].active) {			
-				if(processes[p].reqs[message[0].name]) processes[p].reqs[message[0].name].promise(message[0].value);
+				if(processes[p].steps[message[0].name]) processes[p].steps[message[0].name].promise(message[0].value);
 				console.log("Message du client : "+message[0].value);
 				
 				// Relaunching process
