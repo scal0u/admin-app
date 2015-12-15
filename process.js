@@ -1,33 +1,32 @@
-output_default = {dialog: "Thank you."};
-output = output_default;
+/////////////////////////
+// FUNCTIONS & CLASSES //
+/////////////////////////
 
 // Generates a form
 function prompt(req) {
+	if(!output) output = output_default;
 	output = JSON.stringify(req);
 	// console.log(output);
 };
 
-
-////////////////////////
-// SETTING UP CLASSES //
-////////////////////////
-
 function Process(n, t, r) {
 	this.name = n;
 	this.type = t;
-	this.requirements = r;
+	this.reqs = {};
 
-	this.launch = function() {
+	this.launch = function(relaunch) {
 
-		// Fetching missing requirements
-		for (req in this.requirements) {
+		if(!relaunch) active_processes.push(this);
+
+		// Fetching missing reqs
+		for (req in this.reqs) {
 			output = output_default;
-			if(!this.requirements[req].condition()) {
-				this.requirements[req].method();
+			if(!this.reqs[req].condition()) {
+				this.reqs[req].method();
 				break;
 			}
 		};
-		console.log(output);
+		console.log("Message du serveur : "+output);
 	};
 }
 
@@ -35,11 +34,6 @@ function User(ln, fn, dob) {
 	this.last_name = ln;
 	this.first_name = fn;
 	this.date_of_birth = dob;
-
-	this.has = function(property) {
-		if(!this[property]) return false;
-		else return true;
-	};
 }
 
 
@@ -47,17 +41,27 @@ function User(ln, fn, dob) {
 // VARIABLES //
 ///////////////
 
-var thisUser = new User('Conges');
-var requirements =
-{
-	// "first_name": {condition: function() { return thisUser.first_name }, method: function() { prompt({name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"})}, promise: function(nv) {thisUser.first_name = nv} },
-	// "date_of_birth": {condition: function() {return thisUser.date_of_birth }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} },
-	// "rabbit": {condition: function() { return thisUser.rabbit }, method: function() { prompt({name: "rabbit", type: "text", question: "Please enter your rabbit", placeholder: "rabbit's name"})}, promise: function(nv) {thisUser.rabbit = nv} },
-};
-var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription", requirements);
+output_default = {dialog: "blank"};
+output = output_default;
+active_processes = [];
 
+
+var thisUser = new User('Congès');
+
+var inscriptionMaif = new Process("S'inscrire à la MAIF", "subscription");
+var vaccination = new Process("Vaccination", "administrative");
+
+vaccination.reqs.height = {condition: function() { return thisUser.height }, method: function() { prompt({name: "height", type: "text", question: "Please enter your height", placeholder: "30cm"})}, promise: function(nv) {thisUser.height = nv} };
+
+inscriptionMaif.reqs.first_name = {condition: function() { return thisUser.first_name }, method: function() { prompt({name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"})}, promise: function(nv) {thisUser.first_name = nv} };
+inscriptionMaif.reqs.date_of_birth = {condition: function() { return thisUser.date_of_birth }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} };
+
+// Calling another process
+inscriptionMaif.reqs.rabbit = {condition: function() { return thisUser.rabbit }, method: function() { vaccination.launch(); }, promise: function(nv) {thisUser.date_of_birth = nv} };
+
+
+// Launch
 inscriptionMaif.launch();
-
 
 
 /////////////////
@@ -80,14 +84,16 @@ io.sockets.on('connection', function (socket) {
 
 	// On message reception:
 	socket.on('message', function (message) {
-		// DIRTY CODE
-		// Completing requirement (sauf qu'en fait ça devrait changer la valeur originale)
-		inscriptionMaif.requirements[message[0].name].promise(message[0].value);
-		console.log(message[0].value);
-		
-		// Relaunching process
-		inscriptionMaif.launch();
-		socket.emit('message', output);		
+		for (p in active_processes) {
+			
+			if(active_processes[p].reqs[message[0].name]) active_processes[p].reqs[message[0].name].promise(message[0].value);
+			console.log("Message du client : "+message[0].value);
+			
+			// Relaunching process
+			active_processes[p].launch(true);
+			socket.emit('message', output);		
+
+		};
 	});	
 });
 
