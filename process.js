@@ -3,7 +3,7 @@
 /////////////////////////
 
 var webdriverio = require('webdriverio');
-// var options = { desiredCapabilities: { browserName: 'chrome' } };
+var options = { desiredCapabilities: { browserName: 'firefox' } };
 var client = webdriverio.remote(options);
  
 client
