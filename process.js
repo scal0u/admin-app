@@ -6,16 +6,16 @@ var webdriverio = require('webdriverio');
 var options = { desiredCapabilities: { browserName: 'firefox' } };
 var client = webdriverio.remote(options);
  
-client
-    .init()
-    .url('https://duckduckgo.com/')
-    .setValue('#search_form_input_homepage', 'WebdriverIO')
-    .click('#search_button_homepage')
-    .getTitle().then(function(title) {
-        console.log('Title is: ' + title);
-        // outputs: "Title is: WebdriverIO (Software) at DuckDuckGo"
-    })
-    .end();
+// client
+//     .init()
+//     .url('https://duckduckgo.com/')
+//     .setValue('#search_form_input_homepage', 'WebdriverIO')
+//     .click('#search_button_homepage')
+//     .getTitle().then(function(title) {
+//         console.log('Title is: ' + title);
+//         // outputs: "Title is: WebdriverIO (Software) at DuckDuckGo"
+//     })
+//     .end();
 
 
 // Generates a form
@@ -48,7 +48,7 @@ function Process(n, t, r) {
 		};
 		// If output hasn't changed (meaning all steps are fulfilled)
 		if(output == output_default) { // Process is complete!
-			output = {dialog: "Process <b>"+ this.name+"</b> is now complete"}; // Inform user
+			output = {dialog: "<h2>Thank you.</h2> Process <b>"+ this.name+"</b> is now complete"}; // Inform user
 			this.active = false; // Deactivate process
 			this.promise(); // Running process' promise
 		}
@@ -70,6 +70,24 @@ output_default = {dialog: "blank"};
 output = output_default;
 processes = [];
 
+var Firebase = require("firebase");
+var myFirebaseRef = new Firebase("https://boiling-torch-1466.firebaseio.com/");
+
+myFirebaseRef.child("models/processes/vaccination").set({
+	name: "Vaccination",
+	type: "administrative",
+	steps: {
+		getName: {
+			condition: "thisUser.first_name",
+			method: "prompt",
+			prompt: {name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"}
+		},
+	}
+});
+
+myFirebaseRef.child("models/processes/vaccination/type").on("value", function(snapshot) {
+ 	console.log(snapshot.val());
+});
 
 var thisUser = new User('Congès');
 
@@ -94,9 +112,9 @@ vaccination.promise = function() { thisUser.vaccinated = true; voyageGuyane.laun
 voyageGuyane.launch();
 
 
-/////////////////
-// SERVER SIDE //
-/////////////////
+////////////
+// SERVER //
+////////////
 var http = require('http');
 var server = http.createServer(function(req, res) {
 	res.writeHead(200);
