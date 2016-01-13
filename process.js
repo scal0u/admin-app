@@ -31,6 +31,8 @@ function Process(obj) {
 
 	this.launch = function() {
 
+		console.log("Parent process: "+this.parent_process);
+
 		this.active = true;
 
 		// Fetching missing steps
@@ -42,12 +44,11 @@ function Process(obj) {
 				if(!thisUser[this.steps[step].condition.value]) {
 					// We apply step method
 					if(this.steps[step].method.type == "prompt") prompt(this.steps[step].method.value);
-					else if(this.steps[step].method.type == "switchProcess") {
+					else if(this.steps[step].method.type == "switch_process") {
 						this.active = false;
-						console.log(global[this.steps[step].method.value]);
+						global[this.steps[step].method.value].parent_process = this;
 						global[this.steps[step].method.value].launch();
 					}
-					
 					break;
 				}
 			}
@@ -57,6 +58,7 @@ function Process(obj) {
 			output = {dialog: "<h2>Thank you.</h2> Process <b>"+ this.name+"</b> is now complete"}; // Inform user
 			this.active = false; // Deactivate process
 			this.promise(); // Running process' promise
+			if(this.parent_process) this.parent_process.launch();
 		}
 	};
 	
@@ -103,23 +105,23 @@ voyageGuyane = new Process();
 voyageGuyane.name = "Voyage en Guyane";
 voyageGuyane.type = "travel";
 voyageGuyane.steps.first_name = {condition: {type: "user_data", value: "first_name" }, method: {type: "prompt", value: {name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"}}, promises: [ {type: "user_update", value: "first_name"} ] };
-voyageGuyane.steps.vaccinated = {condition: {type: "user_data", value: "vaccinated" }, method: {type: "switchProcess", value: "vaccination"} };
-voyageGuyane.steps.insured = {condition: {type: "user_data", value: "insured" }, method: {type: "switchProcess", value: "getInsurance"} };
+voyageGuyane.steps.vaccinated = {condition: {type: "user_data", value: "vaccinated" }, method: {type: "switch_process", value: "vaccination"} };
+voyageGuyane.steps.insured = {condition: {type: "user_data", value: "insured" }, method: {type: "switch_process", value: "getInsurance"} };
 voyageGuyane.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"}}, promises: [ {type: "user_update", value: "date_of_birth"} ] };
 
 getInsurance = new Process();
 getInsurance.name = "S'inscrire à la MAIF";
 getInsurance.type = "subscription";
 getInsurance.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "E.g. 01/01/1900"}}, promises: [ {type: "user_update", value: "date_of_birth"} ] };
-getInsurance.steps.NInumber = {condition: {type: "user_data", value: "NInumber" }, method: {type: "prompt", value: {name: "NInumber", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"}}, promises: [ {type: "user_update", value: "NInumber"} ] };
-getInsurance.promise = function() { thisUser.insured = true; voyageGuyane.launch() };
+getInsurance.steps.ni_number = {condition: {type: "user_data", value: "ni_number" }, method: {type: "prompt", value: {name: "ni_number", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"}}, promises: [ {type: "user_update", value: "ni_number"} ] };
+getInsurance.promise = function() { thisUser.insured = true; };
 
 vaccination = new Process();
 vaccination.name = "Vaccination";
 vaccination.type = "administrative";
 vaccination.steps.height = {condition: {type: "user_data", value: "height" }, method: {type: "prompt", value: {name: "height", type: "text", question: "Please enter your height", placeholder: "130cm"}}, promises: [ {type: "user_update", value: "height" } ] };
 vaccination.steps.weight = {condition: {type: "user_data", value: "weight" }, method: {type: "prompt", value: {name: "weight", type: "text", question: "Please enter your weight", placeholder: "25kg"}}, promises: [ {type: "user_update", value: "weight" } ] };
-vaccination.promise = function() { thisUser.vaccinated = true; voyageGuyane.launch() };
+vaccination.promise = function() { thisUser.vaccinated = true; };
 
 
 // Launch
