@@ -41,7 +41,13 @@ function Process(obj) {
 			if(this.steps[step].condition.type == "user_data") {
 				if(!thisUser[this.steps[step].condition.value]) {
 					// We apply step method
-					this.steps[step].method();
+					if(this.steps[step].method.type == "prompt") prompt(this.steps[step].method.value);
+					else if(this.steps[step].method.type == "switchProcess") {
+						this.active = false;
+						console.log(global[this.steps[step].method.value]);
+						global[this.steps[step].method.value].launch();
+					}
+					
 					break;
 				}
 			}
@@ -93,26 +99,26 @@ myFirebaseRef.child("models/processes/vaccination/type").on("value", function(sn
 
 var thisUser = new User('Congès');
 
-var voyageGuyane = new Process();
+voyageGuyane = new Process();
 voyageGuyane.name = "Voyage en Guyane";
 voyageGuyane.type = "travel";
-voyageGuyane.steps.first_name = {condition: {type: "user_data", value: "first_name" }, method: function() { prompt({name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"})}, promise: function(nv) {thisUser.first_name = nv} };
-voyageGuyane.steps.vaccinated = {condition: {type: "user_data", value: "vaccinated" }, method: function() {  voyageGuyane.active = false; vaccination.launch(); } };
-voyageGuyane.steps.insured = {condition: {type: "user_data", value: "insured" }, method: function() {  voyageGuyane.active = false; getInsurance.launch(); } };
-voyageGuyane.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} };
+voyageGuyane.steps.first_name = {condition: {type: "user_data", value: "first_name" }, method: {type: "prompt", value: {name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"}}, promise: function(nv) {thisUser.first_name = nv} };
+voyageGuyane.steps.vaccinated = {condition: {type: "user_data", value: "vaccinated" }, method: {type: "switchProcess", value: "vaccination"} };
+voyageGuyane.steps.insured = {condition: {type: "user_data", value: "insured" }, method: {type: "switchProcess", value: "getInsurance"} };
+voyageGuyane.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"}}, promise: function(nv) {thisUser.date_of_birth = nv} };
 
-var getInsurance = new Process();
+getInsurance = new Process();
 getInsurance.name = "S'inscrire à la MAIF";
 getInsurance.type = "subscription";
-getInsurance.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: function() { prompt({name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "E.g. 01/01/1900"})}, promise: function(nv) {thisUser.date_of_birth = nv} };
-getInsurance.steps.NInumber = {condition: {type: "user_data", value: "NInumber" }, method: function() { prompt({name: "NInumber", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"})}, promise: function(nv) {thisUser.NInumber = nv} };
+getInsurance.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "E.g. 01/01/1900"}}, promise: function(nv) {thisUser.date_of_birth = nv} };
+getInsurance.steps.NInumber = {condition: {type: "user_data", value: "NInumber" }, method: {type: "prompt", value: {name: "NInumber", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"}}, promise: function(nv) {thisUser.NInumber = nv} };
 getInsurance.promise = function() { thisUser.insured = true; voyageGuyane.launch() };
 
-var vaccination = new Process();
+vaccination = new Process();
 vaccination.name = "Vaccination";
 vaccination.type = "administrative";
-vaccination.steps.height = {condition: {type: "user_data", value: "height" }, method: function() { prompt({name: "height", type: "text", question: "Please enter your height", placeholder: "130cm"})}, promise: function(nv) { thisUser.height = nv; } };
-vaccination.steps.weight = {condition: {type: "user_data", value: "weight" }, method: function() { prompt({name: "weight", type: "text", question: "Please enter your weight", placeholder: "25kg"})}, promise: function(nv) { thisUser.weight = nv; } };
+vaccination.steps.height = {condition: {type: "user_data", value: "height" }, method: {type: "prompt", value: {name: "height", type: "text", question: "Please enter your height", placeholder: "130cm"}}, promise: function(nv) { thisUser.height = nv; } };
+vaccination.steps.weight = {condition: {type: "user_data", value: "weight" }, method: {type: "prompt", value: {name: "weight", type: "text", question: "Please enter your weight", placeholder: "25kg"}}, promise: function(nv) { thisUser.weight = nv; } };
 vaccination.promise = function() { thisUser.vaccinated = true; voyageGuyane.launch() };
 
 
