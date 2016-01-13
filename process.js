@@ -97,28 +97,28 @@ myFirebaseRef.child("models/processes/vaccination/type").on("value", function(sn
  	console.log(snapshot.val());
 });
 
-var thisUser = new User('Congès');
+thisUser = new User('Congès');
 
 voyageGuyane = new Process();
 voyageGuyane.name = "Voyage en Guyane";
 voyageGuyane.type = "travel";
-voyageGuyane.steps.first_name = {condition: {type: "user_data", value: "first_name" }, method: {type: "prompt", value: {name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"}}, promise: function(nv) {thisUser.first_name = nv} };
+voyageGuyane.steps.first_name = {condition: {type: "user_data", value: "first_name" }, method: {type: "prompt", value: {name: "first_name", type: "text", question: "What is your first name?", placeholder: "E.g. René"}}, promises: [ {type: "user_update", value: "first_name"} ] };
 voyageGuyane.steps.vaccinated = {condition: {type: "user_data", value: "vaccinated" }, method: {type: "switchProcess", value: "vaccination"} };
 voyageGuyane.steps.insured = {condition: {type: "user_data", value: "insured" }, method: {type: "switchProcess", value: "getInsurance"} };
-voyageGuyane.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"}}, promise: function(nv) {thisUser.date_of_birth = nv} };
+voyageGuyane.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "01/01/1900"}}, promises: [ {type: "user_update", value: "date_of_birth"} ] };
 
 getInsurance = new Process();
 getInsurance.name = "S'inscrire à la MAIF";
 getInsurance.type = "subscription";
-getInsurance.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "E.g. 01/01/1900"}}, promise: function(nv) {thisUser.date_of_birth = nv} };
-getInsurance.steps.NInumber = {condition: {type: "user_data", value: "NInumber" }, method: {type: "prompt", value: {name: "NInumber", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"}}, promise: function(nv) {thisUser.NInumber = nv} };
+getInsurance.steps.date_of_birth = {condition: {type: "user_data", value: "date_of_birth" }, method: {type: "prompt", value: {name: "date_of_birth", type: "text", question: "Please enter your birthdate", placeholder: "E.g. 01/01/1900"}}, promises: [ {type: "user_update", value: "date_of_birth"} ] };
+getInsurance.steps.NInumber = {condition: {type: "user_data", value: "NInumber" }, method: {type: "prompt", value: {name: "NInumber", type: "text", question: "Please enter your National Insurance Number", placeholder: "Your number"}}, promises: [ {type: "user_update", value: "NInumber"} ] };
 getInsurance.promise = function() { thisUser.insured = true; voyageGuyane.launch() };
 
 vaccination = new Process();
 vaccination.name = "Vaccination";
 vaccination.type = "administrative";
-vaccination.steps.height = {condition: {type: "user_data", value: "height" }, method: {type: "prompt", value: {name: "height", type: "text", question: "Please enter your height", placeholder: "130cm"}}, promise: function(nv) { thisUser.height = nv; } };
-vaccination.steps.weight = {condition: {type: "user_data", value: "weight" }, method: {type: "prompt", value: {name: "weight", type: "text", question: "Please enter your weight", placeholder: "25kg"}}, promise: function(nv) { thisUser.weight = nv; } };
+vaccination.steps.height = {condition: {type: "user_data", value: "height" }, method: {type: "prompt", value: {name: "height", type: "text", question: "Please enter your height", placeholder: "130cm"}}, promises: [ {type: "user_update", value: "height" } ] };
+vaccination.steps.weight = {condition: {type: "user_data", value: "weight" }, method: {type: "prompt", value: {name: "weight", type: "text", question: "Please enter your weight", placeholder: "25kg"}}, promises: [ {type: "user_update", value: "weight" } ] };
 vaccination.promise = function() { thisUser.vaccinated = true; voyageGuyane.launch() };
 
 
@@ -145,8 +145,12 @@ io.sockets.on('connection', function (socket) {
 	// On message reception:
 	socket.on('message', function (message) {
 		for (p in processes) {
-			if(processes[p].active) {			
-				if(processes[p].steps[message[0].name]) processes[p].steps[message[0].name].promise(message[0].value);
+			if(processes[p].active) {
+				if(processes[p].steps[message[0].name]) {
+					for(promise in processes[p].steps[message[0].name].promises) {
+						if (promise.type = "user_update") thisUser[processes[p].steps[message[0].name].promises[promise].value] = message[0].value;
+					}
+				}
 				processes[p].launch();
 				break;
 			}
