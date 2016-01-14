@@ -1,0 +1,85 @@
+<html>
+<head>
+	<title>Back-office</title>
+
+	<meta name="viewport" content="width=device-width, user-scalable=yes">
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script src="js/dForm.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+	<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+</head>
+<body>
+
+	<div class="container">
+
+		<div ng-app="myApp" ng-controller="myCtrl">
+
+			<ul>
+				<li ng-repeat="process in processes" class="well">
+					<h3>{{ process.name }} <small>{{ process.type }}</small></h3>
+					
+					<hr>
+
+					<div class="panel panel-info">
+						<div class="panel-heading"><h4>Steps</h4></div>
+						<ul class="panel-body">
+							<li ng-repeat="(key, step) in process.steps">
+								<p> {{ key }} </p>
+								<ul class="list-group">
+									<li class="list-group-item"><b>Condition</b> {{ step.condition }}</li>
+									<li class="list-group-item"><b>Method</b> {{ step.method }}</li>
+									<li class="list-group-item"><b>Promises</b> {{ step.promises }}</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+
+					<div class="panel panel-success">
+						<div class="panel-heading"><h4>Promises</h4></div>
+						<ul class="panel-body">
+							<li ng-repeat="(key, promise) in process.promises">
+								<p> {{ key }} </p>
+								<ul class="list-group">
+									<li class="list-group-item"><b>Type</b> {{ promise.type }}</li>
+									<li class="list-group-item"><b>Key</b> {{ promise.key }}</li>
+									<li class="list-group-item"><b>Value</b> {{ promise.value }}</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+
+				</li>
+			</ul>
+
+		</div>
+
+
+	</div>
+
+	
+	<style>
+		ul {
+			list-style: none;
+			padding-left: 0;
+		}
+	</style>
+
+	<script>
+		var app = angular.module('myApp', ["firebase"]);
+		app.controller('myCtrl', function($scope, $firebaseArray) {
+
+			var ref = new Firebase("https://boiling-torch-1466.firebaseio.com/models/processes");
+			$scope.processes = $firebaseArray(ref);
+			// console.log($scope.processes);
+
+		});
+	</script>
+
+</body>
+</html>
